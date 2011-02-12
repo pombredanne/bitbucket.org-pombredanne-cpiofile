@@ -1,0 +1,23 @@
+syntax: glob
+
+*.Plo
+*.Po
+*.la
+*.lai
+*.lo
+*.pyc
+*~
+.svn
+Makefile
+TAGS
+config.log
+config.status
+dist
+distribute-*.tar.gz
+docs/build
+cpiofile-dev
+cpiofile.egg-info
+libtool
+lt-hello
+stamp-*
+testfiles/autom4te.cache

@@ -1,0 +1,15 @@
+include cheat.el
+include distribute_setup.py
+include cpiofile.py
+include GNUmakefile
+include INSTALL
+include LICENSE
+include MANIFEST.in
+include NEWS
+include README.rst
+include setup.cfg
+include setup.py
+include tests.py
+
+graft docs
+prune docs/build
