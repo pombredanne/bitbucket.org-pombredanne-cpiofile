@@ -4,7 +4,7 @@
 # Copyright 2010 K. Richard Pixley.
 # See LICENSE for details.
 #
-# Time-stamp: <12-Feb-2011 13:13:42 PST by rich@noir.com>
+# Time-stamp: <13-Feb-2011 11:15:06 PST by rich@noir.com>
 
 import os
 
@@ -25,7 +25,7 @@ def read(fname):
 
 setup(
     name='cpiofile',
-    version='0.001',
+    version='0.003',
     author='K. Richard Pixley',
     author_email='rich@noir.com',
     description='A pure python library for reading and writing cpio format archives.',
