@@ -3,7 +3,7 @@
 # Copyright 2011 K. Richard Pixley.
 # See LICENSE for details.
 #
-# Time-stamp: <12-Feb-2011 13:10:26 PST by rich@noir.com>
+# Time-stamp: <12-Feb-2011 17:01:18 PST by rich@noir.com>
 
 # FIXME: is there a way to force dependencies to be installed before
 # building through distutils/setuptools/distribute?  Akin to "apt-get
@@ -41,7 +41,6 @@ setuppy := ${activate} && python setup.py
 
 nose_egg := ${venv}/lib/${vpython}/site-packages/nose-1.0.0-py${pyver}.egg
 sphinx_egg := ${venv}/lib/${vpython}/site-packages/Sphinx-1.0.7-py${pyver}.egg
-coding_egg := ${venv}/lib/${vpython}/site-packages/coding-0.002-py${pyver}.egg
 
 ve = ${python} ${nose_egg} ${sphinx_egg}
 
@@ -56,10 +55,6 @@ ${nose_egg}: ${python}
 sphinx: ${sphinx_egg}
 ${sphinx_egg}: ${python}
 	${pythonbin}/easy_install -U sphinx
-
-coding: ${coding_egg}
-${coding_egg}: ${python}
-	${pythonbin}/easy_install -U coding
 
 .PHONY: ve
 ve: ${python}
