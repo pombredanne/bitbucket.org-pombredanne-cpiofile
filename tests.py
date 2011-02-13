@@ -4,7 +4,7 @@
 # Copyright 2011 K. Richard Pixley.
 # See LICENSE for details.
 #
-# Time-stamp: <12-Feb-2011 18:54:36 PST by rich@noir.com>
+# Time-stamp: <12-Feb-2011 19:54:41 PST by rich@noir.com>
 
 """
 Tests for cpiofile.
@@ -29,20 +29,35 @@ types = [
     'crc',
     ]
 
-def testBasics():
-    with open('filelist', 'w') as f:
-        f.write('tests.py')
+class testBasics(object):
+    def testBasics(self):
+        with open('filelist', 'w') as f:
+            f.write('tests.py')
 
-    for format in types:
-        fname = 'archive-{0}.cpio'.format(format)
+        for format in types:
+            fname = 'archive-{0}.cpio'.format(format)
 
-        with open('filelist', 'r') as f:
-            subprocess.check_call(['cpio', '--quiet', '-oH', format, '-O', fname], stdin=f)
+            with open('filelist', 'r') as f:
+                subprocess.check_call(['cpio', '--quiet', '-oH', format, '-O', fname], stdin=f)
 
-        assert_true(cpiofile.is_cpiofile(fname))
+            assert_true(cpiofile.is_cpiofile(fname))
 
-        with cpiofile.open(fname, 'r') as cf:
-            assert_true(cf)
+            with cpiofile.open(fname, 'r') as cf:
+                assert_true(cf)
+
+    def tearDown(self):
+        for format in types:
+            fname = 'archive-{0}.cpio'.format(format)
+
+            try:
+                os.remove(fname)
+            except:
+                pass
+
+        try:
+            os.remove('filelist')
+        except:
+            pass
 
 if __name__ == '__main__':
     nose.main()
