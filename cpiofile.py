@@ -4,7 +4,7 @@
 # Copyright 2011 K. Richard Pixley.
 # See LICENSE for details.
 #
-# Time-stamp: <12-Feb-2011 19:51:57 PST by rich@noir.com>
+# Time-stamp: <13-Feb-2011 10:24:59 PST by rich@noir.com>
 
 """
 Cpiofile is a library which reads and writes unix style 'cpio' format
@@ -18,15 +18,16 @@ from __future__ import unicode_literals, print_function
 __docformat__ = 'restructuredtext en'
 
 __all__ = [
-    'open',
-    'CpioError',
     'CheckSumError',
-    'InvalidFileFormat',
-    'InvalidFileFormatNull',
-    'HeaderError',
-    'is_cpiofile',
+    'CpioError',
     'CpioFile',
     'CpioMember',
+    'HeaderError',
+    'InvalidFileFormat',
+    'InvalidFileFormatNull',
+    'is_cpiofile',
+    'open',
+    'valid_magic',
     ]
 
 import abc
@@ -55,9 +56,12 @@ class InvalidFileFormatNull(InvalidFileFormat):
 class HeaderError(CpioError):
     pass
 
+def valid_magic(block):
+    return CpioMember._valid_magic(block)
+
 def is_cpiofile(name):
     with io.open(name, 'rb') as f:
-        return CpioMember._valid_magic(f.read(16))
+        return valid_magic(f.read(16))
 
 class StructBase(object):
     __metaclass__ = abc.ABCMeta
@@ -229,6 +233,13 @@ class CpioFile(StructBase):
         cm = cmtype()
         cm.name = 'TRAILER!!!'
         cm.pack_into(block, pointer)
+
+    def get_member(self, name):
+        for member in self.members:
+            if member.name == name:
+                return member
+
+        return None
 
 
 class CpioMember(StructBase):
