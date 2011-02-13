@@ -4,7 +4,7 @@
 # Copyright 2011 K. Richard Pixley.
 # See LICENSE for details.
 #
-# Time-stamp: <13-Feb-2011 10:24:59 PST by rich@noir.com>
+# Time-stamp: <13-Feb-2011 11:13:59 PST by rich@noir.com>
 
 """
 Cpiofile is a library which reads and writes unix style 'cpio' format
@@ -353,13 +353,15 @@ class CpioMember(StructBase):
         return (isinstance(other, self.__class__)
                 and self.coder == other.coder
                 and self.magic == other.magic
-                and self.dev == other.dev
+                and self.devmajor == other.devmajor
+                and self.devminor == other.devminor
                 and self.ino == other.ino
                 and self.mode == other.mode
                 and self.uid == other.uid
                 and self.gid == other.gid
                 and self.nlink == other.nlink
-                and self.rdev == other.rdev
+                and self.rdevmajor == other.rdevmajor
+                and self.rdevminor == other.rdevminor
                 and self.mtime == other.mtime
                 and self.filesize == other.filesize)
 
