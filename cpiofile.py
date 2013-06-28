@@ -4,13 +4,14 @@
 # Copyright 2011 K. Richard Pixley.
 # See LICENSE for details.
 #
-# Time-stamp: <13-Feb-2011 11:13:59 PST by rich@noir.com>
+# Time-stamp: <06-May-2011 12:22:27 PDT by rich@noir.com>
 
 """
 Cpiofile is a library which reads and writes unix style 'cpio' format
 archives.
 
 .. todo:: open vs context manager
+.. todo:: make is_cpiofile work on fileobj
 """
 
 from __future__ import unicode_literals, print_function
