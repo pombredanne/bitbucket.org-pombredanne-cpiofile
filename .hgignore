@@ -2,21 +2,22 @@ syntax: glob
 
 *.Plo
 *.Po
+*.egg
 *.la
 *.lai
 *.lo
 *.pyc
+*.tar.gz
 *~
 .svn
 Makefile
 TAGS
 config.log
 config.status
-dist
-distribute-*.tar.gz
-docs/build
-cpiofile-dev
+cpiofile-dev-*
 cpiofile.egg-info
+dist
+docs/build
 libtool
 lt-hello
 stamp-*

@@ -4,7 +4,7 @@
 # Copyright 2011 K. Richard Pixley.
 # See LICENSE for details.
 #
-# Time-stamp: <12-Feb-2011 19:54:41 PST by rich@noir.com>
+# Time-stamp: <30-Jun-2013 19:07:24 PDT by rich@noir.com>
 
 """
 Tests for cpiofile.
@@ -42,7 +42,7 @@ class testBasics(object):
 
             assert_true(cpiofile.is_cpiofile(fname))
 
-            with cpiofile.open(fname, 'r') as cf:
+            with cpiofile.CpioFile.open(fname, 'r') as cf:
                 assert_true(cf)
 
     def tearDown(self):

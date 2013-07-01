@@ -1,9 +1,10 @@
 #!/usr/bin/make -f
 #
-# Copyright 2011 K. Richard Pixley.
+# Copyright © 2011, 2013 K Richard Pixley
+#
 # See LICENSE for details.
 #
-# Time-stamp: <12-Feb-2011 19:59:15 PST by rich@noir.com>
+# Time-stamp: <30-Jun-2013 17:17:21 PDT by rich@noir.com>
 
 # FIXME: is there a way to force dependencies to be installed before
 # building through distutils/setuptools/distribute?  Akin to "apt-get
@@ -15,51 +16,40 @@ unames := $(shell uname -s)
 
 packagename := cpiofile
 
-#venvopts := --distribute
 venvsuffix := 
 
 pyver := 2.7
+vpython := python${pyver}
 
 ifeq (${unames},Darwin)
 virtualenv := /Library/Frameworks/Python.framework/Versions/${pyver}/bin/virtualenv
 else
 ifeq (${unames},Linux)
-virtualenv := virtualenv
+virtualenv := virtualenv -p ${vpython}
 else
 $(error Unrecognized system)
 endif
 endif
 
-vpython := python${pyver}
-
-venv := ${packagename}-dev
+venvbase := ${packagename}-dev
+venv := ${venvbase}-${pyver}
 pythonbin := ${venv}/bin
 python := ${pythonbin}/python
 
 activate := . ${pythonbin}/activate
 setuppy := ${activate} && python setup.py
+pypitest := -r https://testpypi.python.org/pypi
 
-nose_egg := ${venv}/lib/${vpython}/site-packages/nose-1.0.0-py${pyver}.egg
-sphinx_egg := ${venv}/lib/${vpython}/site-packages/Sphinx-1.0.7-py${pyver}.egg
-
-ve = ${python} ${nose_egg} ${sphinx_egg}
+ve = ${python}
 
 all: develop
-
-nose: ${nose_egg}
-${nose_egg}: ${python}
-	: ${python}
-	: ${nose_egg}
-	${pythonbin}/easy_install -U nose
-
-sphinx: ${sphinx_egg}
-${sphinx_egg}: ${python}
-	${pythonbin}/easy_install -U sphinx
 
 .PHONY: ve
 ve: ${python}
 ${python}: #.stamp-virtualenv
-	${virtualenv} -p ${vpython} --no-site-packages ${venvopts} ${venv}
+	${virtualenv} --no-site-packages ${venv}
+	find ${venv} -name distribute\* -o -name setuptools\* \
+		| xargs rm -rf
 	${activate} && python distribute_setup.py
 
 .stamp-virtualenv: #.stamp-apt:
@@ -67,16 +57,18 @@ ${python}: #.stamp-virtualenv
 	touch $@-new && mv $@-new $@
 
 clean: clean_docs
-	rm -rf ${venv} .stamp-virtualenv .stamp-apt build dist ${packagename}.egg-info ${packagename}/*.pyc apidocs *.egg *.pyc distribute-*.tar.gz
+	rm -rf ${venvbase}* .stamp-virtualenv .stamp-apt build \
+		dist ${packagename}.egg-info *.pyc apidocs *.egg *~
 
 .PHONY: check
-check: develop ${nose_egg}
-	#${activate} && nosetests
+check: ${python}
 	${setuppy} nosetests
+
+sdist_format := bztar
 
 .PHONY: sdist
 sdist: ${ve}
-	${setuppy} sdist
+	${setuppy} sdist --formats=${sdist_format}
 
 .PHONY: bdist
 bdist: ${ve}
@@ -85,20 +77,29 @@ bdist: ${ve}
 .PHONY: develop
 develop: ${venv}/lib/${vpython}/site-packages/${packagename}.egg-link
 
-${venv}/lib/${vpython}/site-packages/${packagename}.egg-link: ${python} ${nose_egg}
+${venv}/lib/${vpython}/site-packages/${packagename}.egg-link: ${python}
+	${setuppy} --version 
+	${setuppy} lint
 	${setuppy} develop
 
 .PHONY: bdist_upload
 bdist_upload: ${python} 
-	${setuppy} bdist_egg upload
+	${setuppy} bdist_egg upload ${pypitest}
 
 .PHONY: sdist_upload
 sdist_upload: ${ve}
-	${setuppy} sdist upload
+	${setuppy} sdist --formats=${sdist_format} upload ${pypitest}
 
 .PHONY: register
 register: ${python}
-	${setuppy} $@
+	${setuppy} $@ ${pypitest}
+
+long.html: long.rst
+	${setuppy} build
+	docutils-*-py${pyver}.egg/EGG-INFO/scripts/rst2html.py $< > $@-new && mv $@-new $@
+
+long.rst: ; ${setuppy} --long-description > $@-new && mv $@-new $@
+
 
 .PHONY: bdist_egg
 bdist_egg: ${ve}
@@ -107,29 +108,47 @@ bdist_egg: ${ve}
 doctrigger = docs/build/html/index.html
 
 .PHONY: docs
-docs: ${doctrigger} develop
+docs: ${doctrigger}
 clean_docs:; (cd docs && $(MAKE) clean)
 
-docsrcdir := docs/source
-docfiles := \
-	${docsrcdir}/conf.py \
-	${docsrcdir}/index.rst \
+${doctrigger}: docs/source/index.rst ${packagename}.py
+	${setuppy} build_sphinx
+	#(cd docs && $(MAKE) html)
 
-${doctrigger}: ${sphinx_egg} ${packagename}.py ${docfiles}
-	(cd docs && $(MAKE) html)
+.PHONY: lint
+lint: ${python}
+	${setuppy} $@
 
 .PHONY: install
 install: ${python}
 	${setuppy} $@
 
+.PHONY: build_sphinx
+build_sphinx: ${python}
+	${setuppy} $@
+
 .PHONY: nosetests
-nosetests: develop ${nose_egg}
+nosetests: ${python}
 	${setuppy} $@
 
 .PHONY: test
 test: ${python}
 	${setuppy} $@
 
-.PHONY: upload_docs docs_upload
-docs_upload upload_docs: ${doctrigger} 
-	${setuppy} upload_docs
+.PHONY: docs_upload upload_docs
+upload_docs docs_upload: ${doctrigger}
+	${setuppy} upload_docs ${pypitest}
+
+supported_versions := \
+	2.6 \
+	2.7 \
+	3.0 \
+	3.1 \
+	3.2 \
+	3.3 \
+
+bigcheck: ${supported_versions:%=bigcheck-%}
+bigcheck-%:; $(MAKE) pyver=$* check
+
+bigupload: register sdist_upload ${supported_versions:%=bigupload-%} docs_upload
+bigupload-%:; $(MAKE) pyver=$* bdist_upload
