@@ -4,7 +4,7 @@
 # Copyright © 2010, 2013 K Richard Pixley <rich@noir.com>
 # See LICENSE for details.
 #
-# Time-stamp: <30-Jun-2013 17:23:24 PDT by rich@noir.com>
+# Time-stamp: <30-Jun-2013 19:53:46 PDT by rich@noir.com>
 
 import os
 import platform
@@ -19,6 +19,7 @@ me='K Richard Pixley'
 memail='rich@noir.com'
 
 setup_requirements = [
+    'coding',
     'nose>=1.0.0',
     'setuptools_hg',
     ]
