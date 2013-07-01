@@ -4,13 +4,10 @@
 #
 # See LICENSE for details.
 #
-# Time-stamp: <30-Jun-2013 17:17:21 PDT by rich@noir.com>
-
-# FIXME: is there a way to force dependencies to be installed before
-# building through distutils/setuptools/distribute?  Akin to "apt-get
-# build-dep".
+# Time-stamp: <30-Jun-2013 19:59:28 PDT by rich@noir.com>
 
 default: all
+all: build
 unamem := $(shell uname -m)
 unames := $(shell uname -s)
 
@@ -59,6 +56,10 @@ ${python}: #.stamp-virtualenv
 clean: clean_docs
 	rm -rf ${venvbase}* .stamp-virtualenv .stamp-apt build \
 		dist ${packagename}.egg-info *.pyc apidocs *.egg *~
+
+.PHONY: build
+build: ${python}
+	${setuppy} build
 
 .PHONY: check
 check: ${python}
