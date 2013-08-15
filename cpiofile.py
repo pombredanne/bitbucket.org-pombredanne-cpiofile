@@ -5,7 +5,7 @@
 #
 # See LICENSE for details.
 #
-# Time-stamp: <30-Jun-2013 19:07:22 PDT by rich@noir.com>
+# Time-stamp: <14-Aug-2013 22:32:13 PDT by rich@noir.com>
 
 """
 Cpiofile is a library which reads and writes unix style 'cpio' format
@@ -299,7 +299,7 @@ class CpioMember(StructBase):
             raise InvalidFileFormatNull
 
         for key in __magicmap__:
-            if block.find(key, offset, offset + len(key)) > -1:
+            if block[offset:offset + len(key)] == key:
                 return __magicmap__[key]
 
         raise InvalidFileFormat
