@@ -4,7 +4,7 @@
 # Copyright © 2010, 2013 K Richard Pixley <rich@noir.com>
 # See LICENSE for details.
 #
-# Time-stamp: <30-Jun-2013 19:53:46 PDT by rich@noir.com>
+# Time-stamp: <14-Aug-2013 22:35:30 PDT by rich@noir.com>
 
 import os
 import platform
@@ -30,18 +30,20 @@ version = platform.python_version()
 if version not in [
     '3.0.1',
     '3.1.5',
+    '3.3.1',
     ]:
     setup_requirements.append('setuptools_lint')
 
 if version not in [
     '3.0.1',
+    '3.3.1',
     ]:
     setup_requirements.append('sphinx>=1.0.5')
 
 
 setuptools.setup(
     name='cpiofile',
-    version='0.4',
+    version='0.5',
     author=me,
     maintainer=me,
     author_email=memail,
